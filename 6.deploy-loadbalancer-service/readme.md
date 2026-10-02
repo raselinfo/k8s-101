@@ -15,7 +15,7 @@ nginx-loadbalancer   LoadBalancer   10.96.x.x      <pending>     80:30080/TCP
 
 EXTERNAL-IP is `<pending>` by default because kind does NOT ship a LoadBalancer controller. In this state a LoadBalancer service behaves exactly like a NodePort service — it auto-picks (or you pin) a `nodePort` and you hit nodeIP:nodePort.
 
-Three port fields in [service.yml](file:///Users/rasel/project/kubernets/6.deploy-loadbalancer-service/service.yml):
+Three port fields in [service.yml]:
 - `port: 80`       — cluster-internal port (for pod-to-pod via ClusterIP)
 - `targetPort: 80` — container port on the nginx pod
 - `nodePort: 30080`— static port on the node (30000–32767); omit to let k8s assign randomly
