@@ -47,4 +47,7 @@ kubectl rollout undo deploy nginx-deployment
 kubectl rollout history deploy nginx-deployment
 ```
 
-##
+- Reload the deployment after changing someting on deployment yaml file
+```
+kubectl rollout restart deployment nginx-deployment
+```

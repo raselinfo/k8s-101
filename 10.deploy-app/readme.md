@@ -43,7 +43,7 @@ kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 ```
 
-- 2. : Find the Node IP
+- 2. : Find the Node IP , Get the port 
 ```
 kubectl get nodes -o wide
 
