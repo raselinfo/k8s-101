@@ -1,0 +1,18 @@
+# ─── Service Specification ───────────────────────────────────────────────────
+# A Service gives a stable network address (DNS + IP) in front of a set of
+# pods. Pods are ephemeral (IPs change when they restart), so clients talk
+# to the Service, which load-balances to matching pods.
+apiVersion: v1 # Core API group (Services live here)
+kind: Service # Resource type
+metadata:
+  name: express-svc # Becomes the DNS name inside the cluster: http://express-svc
+spec:
+  type: NodePort # Exposes the Service on a static port (30000-32767) on every node
+  selector:
+    app: express # Route traffic to ALL pods with this label
+    # (both the Deployment pods and any standalone pod would match)
+  ports:
+    - port: 4010 # Port the Service listens on (cluster-internal access)
+      targetPort: 4010 # Container port on the pod to forward traffic to
+      nodePort: 30410 # Static port on each node for external access
+      # e.g. `curl http://<node-ip>:30410/`

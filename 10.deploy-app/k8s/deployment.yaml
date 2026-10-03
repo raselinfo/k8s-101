@@ -1,0 +1,29 @@
+# ─── Deployment Specification ────────────────────────────────────────────────
+# A Deployment is a higher-level controller that manages ReplicaSets,
+# which in turn create and manage Pods for you.
+# So you do NOT need a separate pod.yaml — this file alone creates the pods.
+apiVersion: apps/v1 # API group + version for workloads (Deployments live in "apps")
+kind: Deployment # Resource type
+metadata:
+  name: express-deploy # Name of the Deployment itself
+  labels:
+    app: express # Labels for the Deployment object (used by tools/queries)
+spec:
+  replicas: 3 # Desired number of identical pods (ReplicaSet keeps this count)
+  selector:
+    matchLabels:
+      app: express # How the Deployment FINDS the pods it owns (must match template labels)
+  template:
+    # ─── Pod Specification (template) ──────────────────────────────────────
+    # Blueprint for each pod the ReplicaSet creates. Note: no "name" needed —
+    # k8s auto-generates names like express-deploy-59f5d6458-dbvcr.
+    metadata:
+      labels:
+        app: express # Pods get this label; MUST match selector.matchLabels above
+    spec:
+      containers:
+        - name: express # Container name inside the pod
+          image: k8s-101-deploy-app:latest # Image loaded into the kind cluster
+          imagePullPolicy: IfNotPresent # Use local image; don't pull from Docker Hub
+          ports:
+            - containerPort: 4010 # Port the app listens on (informational + docs)
