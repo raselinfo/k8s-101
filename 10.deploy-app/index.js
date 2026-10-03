@@ -1,6 +1,6 @@
 import express from 'express';
 import { config } from "dotenv";
-config();
+config({path: "./k8s/.env"});
 const app = express();
 const port = 4010
 

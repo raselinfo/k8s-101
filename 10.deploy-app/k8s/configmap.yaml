@@ -1,0 +1,24 @@
+# ─── ConfigMap Specification ─────────────────────────────────────────────────
+# Stores NON-sensitive configuration as key-value pairs, decoupled from the
+# image. Change config without rebuilding the Docker image.
+# Rule of thumb: ConfigMap = plain config, Secret = credentials/tokens.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: express-config
+  labels:
+    # Standard recommended labels — used by Helm, kustomize, monitoring tools
+    app.kubernetes.io/name: express
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: k8s-101
+data:
+  # Keys here become env vars when injected via envFrom/configMapRef,
+  # or files when mounted as a volume.
+  NODE_ENV: production
+  LOG_LEVEL: info
+  APP_NAME: express
+  APP_PORT: "4010"
+# immutable: true  # Uncomment for config that never changes:
+#   - kubelet stops watching the object (better perf at scale)
+#   - protects against accidental edits
+#   - to change it you must delete + recreate the ConfigMap, then restart pods

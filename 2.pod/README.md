@@ -10,6 +10,11 @@ kubectl get pods --show-labels
 kubectl get pods -o wide
 ```
 
+- List Pod with Watch Mode
+```
+kubectl get pods -w
+```
+
 - show the logs
 ```
 kubectl logs nginx-pod-name
@@ -41,3 +46,4 @@ kubectl edit pod nginx-pod-2
 ```
 kubectl exec -it nginx-pod-name -- bash
 ```
+

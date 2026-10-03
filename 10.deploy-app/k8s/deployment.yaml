@@ -28,25 +28,18 @@ spec:
           ports:
             - containerPort: 4010 # Port the app listens on (informational + docs)
           # ─── Environment Variables ──────────────────────────────────────
-          # Injected into the container process as OS env vars (process.env in Node)
-          env:
-            # 1. Plain key=value
-            - name: NODE_ENV
-              value: production
-            - name: APP_PORT
-              value: "4010"
-            - name: APP_NAME
-              value: express
-            # 2. Value from a Kubernetes Secret (create first: kubectl create secret generic express-secret --from-literal=api-key=xxx)
-            # - name: API_KEY
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: express-secret
-            #       key: api-key
-            # 3. Value from a ConfigMap (create first: kubectl create configmap express-config --from-literal=log-level=info)
-            # - name: LOG_LEVEL
-            #   valueFrom:
-            #     configMapKeyRef:
-            #       name: express-config
-            #       key: log-level
-            
+          # envFrom = inject ALL keys from ConfigMap/Secret as env vars.
+          # Scales to any number of keys without touching this file —
+          # just add KEY=VALUE to the ConfigMap/Secret and rollout restart.
+          envFrom:
+            - configMapRef:
+                name: express-config # Non-sensitive config (NODE_ENV, LOG_LEVEL, APP_NAME...)
+            - secretRef:
+                name: express-env # Sensitive values, created from .env file
+          # Per-key alternative (self-documenting + fails fast on missing key):
+          # env:
+          #   - name: LOG_LEVEL
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: express-config
+          #         key: LOG_LEVEL
