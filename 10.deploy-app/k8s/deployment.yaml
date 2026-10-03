@@ -21,10 +21,15 @@ spec:
       labels:
         app: express # Pods get this label; MUST match selector.matchLabels above
     spec:
+      # Pod identity. Pods run as this ServiceAccount.
+      # Used for imagePullSecrets (private registries) and RBAC permissions.
+      serviceAccountName: express-sa
       containers:
         - name: express # Container name inside the pod
-          image: k8s-101-deploy-app:latest # Image loaded into the kind cluster
-          imagePullPolicy: IfNotPresent # Use local image; don't pull from Docker Hub
+          # image: k8s-101-deploy-app:latest # Image loaded into the kind cluster
+          image: raselstacklearner/privet-k8s-image:latest # Image loaded into the kind cluster
+          # imagePullPolicy: IfNotPresent # Use local image; don't pull from Docker Hub
+          imagePullPolicy: Always # Use remote image; always pull from Docker Hub
           ports:
             - containerPort: 4010 # Port the app listens on (informational + docs)
           # ─── Environment Variables ──────────────────────────────────────
