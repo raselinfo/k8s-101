@@ -32,6 +32,18 @@ spec:
           imagePullPolicy: Always # Use remote image; always pull from Docker Hub
           ports:
             - containerPort: 4010 # Port the app listens on (informational + docs)
+          # ─── Resource Requests (required for HPA) ───────────────────────
+          # HPA computes CPU usage as a PERCENTAGE OF REQUESTS.
+          # No requests → HPA cannot do CPU-based autoscaling.
+          # requests = guaranteed minimum (scheduler uses this)
+          # limits  = maximum allowed (throttled beyond this)
+          resources:
+            requests:
+              cpu: 100m # 0.1 of a core
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
           # ─── Environment Variables ──────────────────────────────────────
           # envFrom = inject ALL keys from ConfigMap/Secret as env vars.
           # Scales to any number of keys without touching this file —

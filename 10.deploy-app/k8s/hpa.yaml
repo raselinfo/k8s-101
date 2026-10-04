@@ -1,0 +1,37 @@
+# ─── HPA Specification (HorizontalPodAutoscaler) ─────────────────────────────
+# Automatically scales deployment replicas based on observed metrics.
+# HPA → Deployment → ReplicaSet → Pods (it only edits spec.replicas).
+#
+# Requirements:
+#   1. metrics-server must be installed (kubectl top pods must work)
+#   2. containers MUST declare resources.requests.cpu
+#      (target is a % OF the requests, not of the whole core)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: express-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: express-deploy # The deployment to scale
+  minReplicas: 3 # Never scale below this
+  maxReplicas: 10 # Never scale above this
+  metrics:
+    # Scale when average CPU across pods exceeds 60% of the REQUESTED cpu (100m)
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+  behavior: # Optional tuning (defaults are conservative; scale-down is slow on purpose)
+    scaleDown:
+      stabilizationWindowSeconds: 300 # Wait 5 min before scaling down (avoid flapping)
+    scaleUp:
+      stabilizationWindowSeconds: 0 # Scale up immediately
+---
+# ─── Load test pod (run manually to see HPA in action) ───────────────────────
+# kubectl run -it load-generator --rm --image=busybox:1.36 --restart=Never -- /bin/sh -c \
+#   "while true; do wget -q -O- http://express-svc:4010/ >/dev/null; done"
+# Watch: kubectl get hpa express-hpa -w
